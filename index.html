@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+        <title>A single page</title>
+
+        <link rel="stylesheet" href="css/reset.css">
+        <link rel="stylesheet" href="css/style.css">
+
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    </head>
+
+    <body>
+
+        <div class="nav">
+            <a rel="up" target="#" class="nav-button nav-button-up">&uarr;</a>
+            <a rel="right" target="#" class="nav-button nav-button-right">&rarr;</a>
+            <a rel="down" target="#" class="nav-button nav-button-down">&darr;</a>
+            <a rel="left" target="#" class="nav-button nav-button-left">&larr;</a>
+        </div>
+
+        <div class="viewport">
+
+            <template id="content-template">
+
+                <h3 class="position-data"></h3>
+
+                <h2 class="title">
+                    <span class="">Title: </span>
+                    <span class="title-data"></span>
+                </h2>
+
+                <div class="releasedate">
+                    <span class="label">Released: </span>
+                    <span class="releasedate-data"></span>
+                </div>
+
+                <div class="director">
+                    <span class="label">Director: </span>
+                    <span class="director-data"></span>
+                </div>
+
+                <div class="actors">
+                    <span class="label">Starring: </span>
+                    <span class="actors-data"></span>
+                </div>
+
+                <div class="plot">
+                    <span class="label">Plot: </span>
+                    <span class="plot-data"></span>
+                </div>
+
+                <div class="content-error"></div>
+
+            </template>
+
+            <div id="content-container"></div>
+
+        </div>
+
+        <script src="js/script.js"></script>
+
+    </body>
+
+</html>

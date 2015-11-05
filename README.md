@@ -12,4 +12,4 @@ The following configuration options can be set in `js/main.js`
    
 *   `blockDuringTransform` Allow one navigation transition at the time, i.e. block navigation when a transform is in progress
    
-*   `randomContent` Words used query the OMDb (Open Movie Database) at http://www.omdbapi.com. The results are used to fill the content elements (pages)
+*   `randomContent` Words used to query the OMDb (Open Movie Database) at http://www.omdbapi.com. The results are used to fill the content elements (pages)

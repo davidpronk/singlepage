@@ -2,7 +2,9 @@
 
 A single page web app that shows content (pages) from the OMDb (Open Movie Database) in a grid. Navigate in four directions by clicking the arrows or cursor keys.
 
-Configuration options (can only be set in `js/script.js` for now)
+Run `npm install` to install external dependencies
+
+The following configuration options can be set in `js/main.js`
 
 *   `numberOfRows` The number of rows of pages
 

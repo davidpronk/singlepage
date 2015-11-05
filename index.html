@@ -11,27 +11,28 @@
         <link rel="stylesheet" href="css/reset.css">
         <link rel="stylesheet" href="css/style.css">
 
-        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-
     </head>
 
     <body>
 
-        <div class="nav">
-            <a rel="up" target="#" class="nav-button nav-button-up">&uarr;</a>
-            <a rel="right" target="#" class="nav-button nav-button-right">&rarr;</a>
-            <a rel="down" target="#" class="nav-button nav-button-down">&darr;</a>
-            <a rel="left" target="#" class="nav-button nav-button-left">&larr;</a>
-        </div>
+        <nav class="navigation">
+            <button rel="up" class="nav-button nav-button-up">&uarr;</button>
+            <button rel="right" class="nav-button nav-button-right">&rarr;</button>
+            <button rel="down" class="nav-button nav-button-down">&darr;</button>
+            <button rel="left" class="nav-button nav-button-left">&larr;</button>
+        </nav>
 
         <div class="viewport">
 
             <template id="content-template">
 
-                <h3 class="position-data"></h3>
+                <h3 class="position">
+                    <span class="position-label">Position: </span>
+                    <span class="position-data"></span>
+                </h3>
 
                 <h2 class="title">
-                    <span class="">Title: </span>
+                    <span class="title-label">Title: </span>
                     <span class="title-data"></span>
                 </h2>
 
@@ -55,15 +56,13 @@
                     <span class="plot-data"></span>
                 </div>
 
-                <div class="content-error"></div>
-
             </template>
 
             <div id="content-container"></div>
 
         </div>
 
-        <script src="js/script.js"></script>
+        <script data-main="js/main" src="node_modules/requirejs/require.js"></script>
 
     </body>
 

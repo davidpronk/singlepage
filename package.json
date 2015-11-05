@@ -1,0 +1,14 @@
+{
+    "name": "single-page",
+    "version": "0.1.0",
+    "description": "A single page web app that shows content (pages) from the OMDb (Open Movie Database) in a grid.",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/davidpronk/singlepage.git"
+    },
+    "dependencies": {
+        "jquery": "^2.1.4",
+        "requirejs": "^2.1.20"
+    }
+}

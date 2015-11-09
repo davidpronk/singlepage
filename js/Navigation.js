@@ -1,32 +1,47 @@
 define(
-
     [
         'jquery'
     ],
 
-    function( $ ) {
+    function ( $ ) {
 
         var defaultConfig = {
-            numberOfRows : 8,
-            numberOfColumns : 8,
+            numberOfColumns : 5,
             blockDuringTransform : true,
-            randomContent : 'hearts hostility avocado basket greedy dozen really conceptual dizzy under anybody thing anyone bridge ghoulish whisper several heating deathly implant liquid dancing company fellow echo coastal twin clover conservative guest sausage blubber pencil cloud moon water computer school network hammer walking violently mediocre literature chair two window cords musical zebra xylophone penguin home dog final ink teacher fun website banana uncle softly mega ten awesome attatch blue internet bottle tight zone tomato prison hydro cleaning telivision send frog cup book zooming falling evily gamer lid juice moniter captain bonding loudly thudding guitar shaving hair soccer water racket table late media desktop flipper club flying smooth monster purple guardian bold hyperlink presentation world national comment element magic lion sand crust toast jam hunter forest foraging silently pong'
+            contentContainer : document.getElementById( 'content-container' ),
+            contentItems : document.querySelectorAll( '.content' )
         };
+
+        /**
+         *
+         * @param config
+         * @constructor
+         */
 
         var Navigation = function ( config ) {
 
             this.config = $.extend( {}, defaultConfig, config );
 
-            this.numberOfElements = this.config.numberOfRows * this.config.numberOfColumns;
-            this.maxX = this.config.numberOfRows - 1;
-            this.maxY = this.config.numberOfColumns - 1;
+            this.contentElements = Array.prototype.slice.apply( this.config.contentItems );
+
+            // TODO: handle the remaining items in the bottom row.
+            // Because right now flooring the result neglects the remainder of the division
+            // var remainder = contentElements % numberOfColumns;
+            this.numberOfRows = Math.floor( this.contentElements.length / this.config.numberOfColumns );
+
+
+            this.maxX = this.config.numberOfColumns - 1;
+            this.maxY = this.numberOfRows - 1;
 
             // Get the DOM elements we need
             this.navContainer = document.getElementsByClassName( 'navigation' )[ 0 ];
-            this.contentContainer = document.getElementById( 'content-container' );
             this.navButtons = Array.prototype.slice.apply( document.querySelectorAll( '.nav-button' ) );
 
+            this.template = document.querySelector( '#content-template' );
+
+
             // Set initial values
+            this.currIndex = 0;
             this.isTransforming = false;
             this.currX = 0;
             this.currY = 0;
@@ -42,8 +57,6 @@ define(
 
             init : function () {
 
-                this.generateContentNodes();
-
                 this.bindButtonHandlers();
 
                 this.bindKeyDownHandlers();
@@ -58,49 +71,6 @@ define(
 
             },
 
-            addContent : function () {
-
-                var contentElements = Array.prototype.slice.apply( document.querySelectorAll( '.content' ) );
-                var template = document.querySelector( '#content-template' );
-
-                contentElements.forEach( function ( el ) {
-
-                    var query = el.getAttribute( 'data-query' );
-
-                    if ( query ) {
-
-                        var dataURL = 'http://www.omdbapi.com/?t=' + query + '&type=movie&plot=full&r=json';
-
-                        $.ajax( {
-                            url : dataURL,
-                            context : el
-                        } ).done( function ( data ) {
-
-                            // "this" is our el through the $.ajax context property
-                            var posX = this.getAttribute( 'data-pos-x' );
-                            var posY = this.getAttribute( 'data-pos-y' );
-
-                            template.content.querySelectorAll( '.position-data' )[ 0 ].innerHTML = posX + ' / ' + posY;
-                            template.content.querySelectorAll( '.title-data' )[ 0 ].innerHTML = data.Title;
-                            template.content.querySelectorAll( '.releasedate-data' )[ 0 ].innerHTML = data.Released;
-                            template.content.querySelectorAll( '.director-data' )[ 0 ].innerHTML = data.Director;
-                            template.content.querySelectorAll( '.actors-data' )[ 0 ].innerHTML = data.Actors;
-                            template.content.querySelectorAll( '.plot-data' )[ 0 ].innerHTML = data.Plot + ' ' + data.Plot + ' ' + data.Plot;
-
-                            var node = document.importNode( template.content, true );
-
-                            this.appendChild( node );
-
-                        } ).fail( function ( e ) {
-                            // TODO: handle errors
-                        } );
-
-                    }
-
-                } );
-
-            },
-
             bindButtonHandlers : function () {
 
                 this.navButtons.forEach( function ( el ) {
@@ -110,7 +80,7 @@ define(
                         e.stopPropagation();
                         e.preventDefault();
 
-                        if ( this.isTransforming && this.blockDuringTransform ) {
+                        if ( this.isTransforming && this.config.blockDuringTransform ) {
                             return;
                         }
 
@@ -150,7 +120,7 @@ define(
 
                 document.addEventListener( 'keydown', function ( e ) {
 
-                    if ( this.isTransforming && this.blockDuringTransform ) {
+                    if ( this.isTransforming && this.config.blockDuringTransform ) {
                         return;
                     }
 
@@ -183,42 +153,121 @@ define(
 
             bindTransitionEndHandlers : function () {
 
-                this.contentContainer.addEventListener( this.transitionEndEvent, function () {
+                this.config.contentContainer.addEventListener( this.transitionEndEvent, function () {
                     this.isTransforming = false;
                 }.bind( this ) );
 
             },
 
-            generateContentNodes : function () {
+            getElementByHash : function ( hash ) {
 
-                var posX = 1;
-                var posY = 1;
-                var queries = this.config.randomContent.split( ' ' );
-
+                var numElements = this.contentElements.length;
                 var x = 0;
-                for ( ; x < this.numberOfElements; x ++ ) {
 
-                    var index = x + 1;
-                    var node = document.createElement( 'div' );
+                for ( ; x < numElements; x ++ ) {
 
-                    node.classList.add( 'content' );
-                    node.setAttribute( 'data-query', queries[ x ] );
-                    node.setAttribute( 'data-pos-x', posX );
-                    node.setAttribute( 'data-pos-y', posY );
+                    var el = this.contentElements[ x ];
 
-                    posX ++;
-
-                    if ( index % ( this.maxX + 1 ) === 0 ) {
-                        node.style.float = 'none';
-                        posX = 1;
-                        posY ++;
+                    if ( el.getAttribute( 'data-query' ) === hash ) {
+                        return el;
                     }
-
-                    this.contentContainer.appendChild( node );
 
                 }
 
-                this.addContent();
+                return false;
+
+            },
+
+            getIndexByHash : function ( hash ) {
+
+                var numElements = this.contentElements.length;
+                var x = 0;
+
+                for ( ; x < numElements; x ++ ) {
+
+                    var el = this.contentElements[ x ];
+
+                    if ( el.getAttribute( 'data-query' ) === hash ) {
+                        return x;
+                    }
+
+                }
+
+                return false;
+
+            },
+
+            getXPos : function ( index ) {
+                return index % this.config.numberOfColumns;
+            },
+
+            getYPos : function ( index ) {
+
+                var currY = 0;
+
+                if ( index > 0 ) {
+                    currY = Math.floor( ( index ) / this.config.numberOfColumns );
+                }
+
+                return currY;
+
+            },
+
+            loadContent : function () {
+
+                // get a new clean empty template
+                var template = this.template;
+
+                var el = this.contentElements[ this.currIndex ];
+
+                var query = el.getAttribute( 'data-query' );
+
+                if ( query && ! el.classList.contains( 'loaded' ) ) {
+
+                    var dataURL = 'http://www.omdbapi.com/?t=' + query + '&type=movie&plot=full&r=json';
+
+                    $.ajax( {
+                        url : dataURL,
+                        context : {
+                            this : this,
+                            el : el
+                        }
+                    } ).done( function ( data ) {
+
+                        // TODO: this.this is kind of confusing
+                        var index = this.this.getIndexByHash( el.getAttribute( 'data-query' ) );
+                        var elX = this.this.getXPos( index );
+                        var elY = this.this.getYPos( index );
+
+                        template.content.querySelectorAll( '.position-data' )[ 0 ].innerHTML = ( elX + 1 ) + ' / ' + ( elY + 1 );
+
+                        if ( data.Error ) {
+
+                            template.content.querySelectorAll( '.error' )[ 0 ].innerHTML = data.Error;
+                            this.el.classList.add( 'load-error' );
+
+                        } else {
+
+                            template.content.querySelectorAll( '.position-data' )[ 0 ].innerHTML = ( elX + 1 ) + ' / ' + ( elY + 1 );
+                            template.content.querySelectorAll( '.title-data' )[ 0 ].innerHTML = data.Title;
+                            template.content.querySelectorAll( '.releasedate-data' )[ 0 ].innerHTML = data.Released;
+                            template.content.querySelectorAll( '.director-data' )[ 0 ].innerHTML = data.Director;
+                            template.content.querySelectorAll( '.actors-data' )[ 0 ].innerHTML = data.Actors;
+                            template.content.querySelectorAll( '.plot-data' )[ 0 ].innerHTML = data.Plot + ' ' + data.Plot + ' ' + data.Plot;
+
+                        }
+
+                        var node = document.importNode( template.content, true );
+
+                        this.el.classList.add( 'loaded' );
+
+                        el.appendChild( node );
+
+                    } ).fail( function ( e ) {
+                        // TODO: handle errors
+                    } );
+
+                }
 
             },
 
@@ -262,21 +311,27 @@ define(
                 this.navigate();
             },
 
-
             navigate : function () {
 
-                this.toggleNavButtonVisibility();
+                this.currIndex = ( this.currY * this.config.numberOfColumns ) + this.currX;
 
-                this.isTransforming = true;
+                var hash = this.contentElements[ this.currIndex ].getAttribute( 'data-query' );
 
-                history.pushState( {}, '', '#' + ( this.currX + 1 ) + ',' + ( this.currY + 1 ) + '' );
+                history.pushState( {}, '', '#' + hash );
 
                 this.transform();
 
             },
 
             transform : function () {
-                this.contentContainer.style[ this.transformName ] = 'translate(' + this.currX * - 100 + 'vw ,' + this.currY * - 100 + 'vh )';
+
+                this.isTransforming = true;
+
+                this.loadContent();
+
+                this.toggleNavButtonVisibility();
+
+                this.config.contentContainer.style[ this.transformName ] = 'translate(' + this.currX * - 100 + 'vw ,' + this.currY * - 100 + 'vh )';
             },
 
             parseURL : function () {
@@ -285,18 +340,25 @@ define(
 
                 if ( hash ) {
 
-                    var requestedX = hash.split( ',' )[ 0 ];
-                    var requestedY = hash.split( ',' )[ 1 ];
+                    var index = this.getIndexByHash( hash );
 
-                    if ( requestedX > 0 && requestedX <= this.maxX ) {
-                        this.currX = requestedX - 1;
+                    if( index ) {
+
+                        this.currIndex = index;
+
+                        this.currX = this.getXPos( this.currIndex );
+                        this.currY = this.getYPos( this.currIndex );
+
+                        this.transform();
+
+                    } else {
+                        // TODO: show "content not found" error
+                        // For now return home
+
+                        this.currX = 0;
+                        this.currY = 0;
+                        this.navigate();
                     }
-
-                    if ( requestedY > 0 && requestedY <= this.maxY ) {
-                        this.currY = requestedY - 1;
-                    }
-
-                    this.transform();
 
                 } else {
                     this.navigate()

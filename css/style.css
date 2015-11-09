@@ -52,6 +52,31 @@ body {
     padding: 40px;
 }
 
+.content.end-of-column {
+    float: none;
+}
+
+.content.loaded .loading-text {
+    display: none;
+}
+
+.content.error .movie {
+    display: none;
+}
+
+.content.load-error .movie {
+    display: none;
+}
+
+.content.load-error .error {
+    display: block;
+}
+
+.error {
+    display: none;
+    color: #f00;
+}
+
 .position-label,
 .position-data {
     font-size: .75rem;

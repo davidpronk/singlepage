@@ -6,8 +6,6 @@ Run `npm install` to install external dependencies
 
 The following configuration options can be set in `js/main.js`
 
-*   `numberOfRows` The number of rows of pages
-
 *   `numberOfColumns` The number of columns of pages
    
 *   `blockDuringTransform` Allow one navigation transition at the time, i.e. block navigation when a transform is in progress
